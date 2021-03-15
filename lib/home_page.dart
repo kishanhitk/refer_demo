@@ -15,10 +15,53 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final DynamicLinkService _dynamicLinkService = DynamicLinkService();
   final _referCodeTextController = TextEditingController();
+
+  onResumeHandleDynamicLink() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      _handleDynamicLink(dynamicLink);
+    }, onError: (OnLinkErrorException e) async {
+      print('Link Failed: ${e.message}');
+    });
+  }
+
+  initDynamicLinks(BuildContext context) async {
+    var data = await FirebaseDynamicLinks.instance.getInitialLink();
+    print(data);
+    _handleDynamicLink(data);
+  }
+
+  _handleDynamicLink(PendingDynamicLinkData data) {
+    var deepLink = data?.link;
+    if (deepLink != null) {
+      final queryParams = deepLink.queryParameters;
+      if (queryParams.length > 0) {
+        var referCode = queryParams['refer_code'];
+        print("Refer Code is" + referCode);
+        _referCodeTextController.clear();
+        _referCodeTextController.text = referCode;
+      }
+    }
+  }
+
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    this.initDynamicLinks(context);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print('App Resumed');
+      this.onResumeHandleDynamicLink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +73,7 @@ class _HomePageState extends State<HomePage> {
               controller: _referCodeTextController,
               decoration: InputDecoration(
                 filled: true,
+                labelText: "Refer Code",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -61,5 +105,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }
