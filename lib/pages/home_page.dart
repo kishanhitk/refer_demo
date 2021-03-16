@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:refer_demo/refer_page.dart';
-import 'package:refer_demo/refer_service.dart';
+import 'package:refer_demo/pages/refer_page.dart';
 
 class HomePage extends StatefulWidget {
   final String referCode;
@@ -16,7 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final DynamicLinkService _dynamicLinkService = DynamicLinkService();
   final _referCodeTextController = TextEditingController();
 
   onResumeHandleDynamicLink() async {
@@ -82,8 +78,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  UserCredential userCredential =
-                      await FirebaseAuth.instance.signInAnonymously();
+                  await FirebaseAuth.instance.signInAnonymously();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ReferPage(),

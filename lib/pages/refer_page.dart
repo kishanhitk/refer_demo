@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:refer_demo/home_page.dart';
-import 'package:refer_demo/refer_service.dart';
+import 'package:refer_demo/services/refer_service.dart';
 import 'package:share/share.dart';
+
+import 'home_page.dart';
 
 class ReferPage extends StatelessWidget {
   final uid = FirebaseAuth.instance.currentUser.uid;
@@ -17,6 +18,8 @@ class ReferPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 Uri referLink = await DynamicLinkService.createDynamicLink(uid);
+                // Share.share(
+                //     "My Uid is\n $uid and my refer code is \n${referLink.toString()}.");
                 Share.share(referLink.toString());
               },
               child: Text("Share Refer Code"),

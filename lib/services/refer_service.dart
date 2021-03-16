@@ -1,6 +1,4 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/material.dart';
-import 'package:refer_demo/home_page.dart';
 
 class DynamicLinkService {
   static Future<Uri> createDynamicLink(String uid) async {
